@@ -8,7 +8,7 @@ let m2_el = document.getElementById('m2');
 let L1_el = document.getElementById('l1');
 let L2_el = document.getElementById('l2');
 
-// Values of HTML Elements
+// Values of the HTML Elements
 let g = parseFloat(g_el.value);
 let m1 = parseFloat(m1_el.value);
 let m2 = parseFloat(m2_el.value);
@@ -16,32 +16,17 @@ let L1 = parseFloat(L1_el.value);
 let L2 = parseFloat(L2_el.value);
 // console.log(g, m1, m2, l1, l2);
 
-g_el.addEventListener('change', ()=>{
-    g = parseFloat(g_el.value);
-    console.log(g);
-});
+[g_el, m1_el, m2_el, L1_el, L2_el].forEach(el =>
+    el.addEventListener('change', () =>{
+        g = parseFloat(g_el.value);
+        m1 = parseFloat(m1_el.value);
+        m2 = parseFloat(m2_el.value);
+        L1 = parseFloat(L1_el.value);
+        L2 = parseFloat(L2_el.value);
+    })
+);
 
-m1_el.addEventListener('change', ()=>{
-    m1 = parseFloat(m1_el.value);
-    console.log(m1);
-});
-
-m2_el.addEventListener('change', ()=>{
-    m2 = parseFloat(m2_el.value);
-    console.log(m2);
-});
-
-L1_el.addEventListener('change', ()=>{
-    L1 = parseFloat(L1_el.value);
-    console.log(L1);
-});
-
-L2_el.addEventListener('change', ()=>{
-    L2 = parseFloat(L2_el.value);
-    console.log(L2);
-});
-
-const dt = 0.02;
+const dt = 0.09;
 
 let theta1 = Math.PI / -2;
 let theta2 = Math.PI / -2;
@@ -56,7 +41,7 @@ let x1, y1, x2, y2;
 
 let trail = [];
 
-function update(){
+function getAccelerations(theta1, theta2, theta1_v, theta2_v){
     const num1 = -g * ( 2 * m1 + m2) * Math.sin(theta1) - m2 * g * Math.sin(theta1 - 2 * theta2) - 2 * Math.sin(theta1 - theta2) * m2 * (theta2_v ** 2 * L2 + theta1_v ** 2 * L1 * Math.cos(theta1 - theta2));
     const den1 = L1 * (2 * m1 + m2 - m2 * Math.cos(2 * theta1 - 2 * theta2));
     theta1_a = num1 / den1;
@@ -65,28 +50,77 @@ function update(){
     const den2 = L2 * (2 * m1 + m2 - m2 * Math.cos(2 * theta1 - 2 * theta2));
     theta2_a = num2 / den2;
 
-    theta1_v += theta1_a;
-    theta2_v += theta2_a;
-    theta1 += theta1_v;
-    theta2 += theta2_v;
+    return [theta1_a, theta2_a];
+}
+
+function update(){
+    // k1 rates
+    const k1_v1 = theta1_v * dt;
+    const k1_v2 = theta2_v * dt;
+    const [k1_a1, k1_a2] = getAccelerations(theta1, theta2, theta1_v, theta2_v);
+    const k1_a1_dt = k1_a1 * dt;
+    const k1_a2_dt = k1_a2 * dt;
+
+    // k2 rates
+    const k2_v1 = (theta1_v + k1_a1_dt / 2) * dt;
+    const k2_v2 = (theta2_v + k1_a2_dt / 2) * dt;
+    const [k2_a1, k2_a2] = getAccelerations(
+        theta1 + k1_v1 / 2,
+        theta2 + k1_v2 / 2,
+        theta1_v + k1_a1_dt / 2,
+        theta2_v + k1_a2_dt / 2
+    );
+    const k2_a1_dt = k2_a1 * dt;
+    const k2_a2_dt = k2_a2 * dt;
+
+    // k3 rates
+    const k3_v1 = (theta1_v + k2_a1_dt / 2) * dt;
+    const k3_v2 = (theta2_v + k2_a2_dt / 2) * dt;
+    const [k3_a1, k3_a2] = getAccelerations(
+        theta1 + k2_v1 / 2,
+        theta2 + k2_v2 / 2,
+        theta1_v + k2_a1_dt / 2,
+        theta2_v + k2_a2_dt / 2
+    );
+    const k3_a1_dt = k3_a1 * dt;
+    const k3_a2_dt = k3_a2 * dt;
+
+    // k4 rates
+    const k4_v1 = (theta1_v + k3_a1_dt) * dt;
+    const k4_v2 = (theta2_v + k3_a2_dt) * dt;
+    const [k4_a1, k4_a2] = getAccelerations(
+        theta1 + k3_v1,
+        theta2 + k3_v2,
+        theta1_v + k3_a1_dt,
+        theta2_v + k3_a2_dt
+    );
+    const k4_a1_dt = k4_a1 * dt;
+    const k4_a2_dt = k4_a2 * dt;
+
+
+    theta1 += (k1_v1 + 2 * k2_v1 + 2 * k3_v1 + k4_v1) / 6;
+    theta2 += (k1_v2 + 2 * k2_v2 + 2 * k3_v2 + k4_v2) / 6;
+
+    theta1_v += (k1_a1_dt + 2 * k2_a1_dt + 2 * k3_a1_dt + k4_a1_dt) / 6;
+    theta2_v += (k1_a2_dt + 2 * k2_a2_dt + 2 * k3_a2_dt + k4_a2_dt) / 6;
 
     // Dampping
-    theta1_v *= 0.999;
-    theta2_v *= 0.999;
-
-    x1 = L1 * Math.sin(theta1);
-    y1 = L1 * Math.cos(theta1);
-    x2 = x1 + L2 * Math.sin(theta2);
-    y2 = y1 + L2 * Math.cos(theta2);
+    theta1_v *= 0.99995;
+    theta2_v *= 0.99995;
 
     trail.push({ x: x2, y: y2 });
-    if (trail.length > 300) trail.shift();
+    if (trail.length > 5000) trail.shift();
 }
 
 function draw() {
     ctx.clearRect(0, 0, c.width, c.height);
     ctx.save();
     ctx.translate(c.width / 2, 200);
+
+    x1 = L1 * Math.sin(theta1);
+    y1 = L1 * Math.cos(theta1);
+    x2 = x1 + L2 * Math.sin(theta2);
+    y2 = y1 + L2 * Math.cos(theta2);
 
     // Draw trail
     ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
@@ -121,7 +155,7 @@ function draw() {
 }
 
 function loop() {
-    update();
+    for (let i = 0; i < 2; i++) update();
     draw();
     requestAnimationFrame(loop);
 }
