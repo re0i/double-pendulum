@@ -1,45 +1,43 @@
-const c = document.getElementById('canvas');
-const ctx = c.getContext('2d');
+let g_el, m1_el, m2_el, L1_el, L2_el;
+let g, m1, m2, L1, L2;
 
-// HTML Elements
-let g_el = document.getElementById('gravity');
-let m1_el = document.getElementById('m1');
-let m2_el = document.getElementById('m2');
-let L1_el = document.getElementById('l1');
-let L2_el = document.getElementById('l2');
+const dt = 0.01;
 
-// Values of the HTML Elements
-let g = parseFloat(g_el.value);
-let m1 = parseFloat(m1_el.value);
-let m2 = parseFloat(m2_el.value);
-let L1 = parseFloat(L1_el.value);
-let L2 = parseFloat(L2_el.value);
-// console.log(g, m1, m2, l1, l2);
-
-[g_el, m1_el, m2_el, L1_el, L2_el].forEach(el =>
-    el.addEventListener('change', () =>{
-        g = parseFloat(g_el.value);
-        m1 = parseFloat(m1_el.value);
-        m2 = parseFloat(m2_el.value);
-        L1 = parseFloat(L1_el.value);
-        L2 = parseFloat(L2_el.value);
-    })
-);
-
-const dt = 0.09;
-
-let theta1 = Math.PI / -2;
-let theta2 = Math.PI / -2;
+let theta1 = Math.PI / 2;
+let theta2 = Math.PI / 2;
 let theta1_v = 0 * dt;
 let theta2_v = 0 * dt;
 let theta1_a = 0 * dt;
 let theta2_a = 0 * dt;
-// console.log(theta1, theta2);
 
 let x1, y1, x2, y2;
-// console.log(x1, x2, y1, y2);
-
 let trail = [];
+
+function setup(){
+    createCanvas(800, 600);
+
+    g_el = select('#gravity');
+    m1_el = select('#m1');
+    m2_el = select('#m2');
+    L1_el = select('#l1');
+    L2_el = select('#l2');
+
+    g = parseFloat(g_el.value());
+    m1 = parseFloat(m1_el.value());
+    m2 = parseFloat(m2_el.value());
+    L1 = parseFloat(L1_el.value());
+    L2 = parseFloat(L2_el.value());
+
+    [g_el, m1_el, m2_el, L1_el, L2_el].forEach(el =>
+        el.input(() =>{
+            g = parseFloat(g_el.value());
+            m1 = parseFloat(m1_el.value());
+            m2 = parseFloat(m2_el.value());
+            L1 = parseFloat(L1_el.value());
+            L2 = parseFloat(L2_el.value());
+        })
+    );
+}
 
 function getAccelerations(theta1, theta2, theta1_v, theta2_v){
     const num1 = -g * ( 2 * m1 + m2) * Math.sin(theta1) - m2 * g * Math.sin(theta1 - 2 * theta2) - 2 * Math.sin(theta1 - theta2) * m2 * (theta2_v ** 2 * L2 + theta1_v ** 2 * L1 * Math.cos(theta1 - theta2));
@@ -112,52 +110,37 @@ function update(){
     if (trail.length > 5000) trail.shift();
 }
 
-function draw() {
-    ctx.clearRect(0, 0, c.width, c.height);
-    ctx.save();
-    ctx.translate(c.width / 2, 200);
+function draw(){
+    background(0);
+    update();
 
-    x1 = L1 * Math.sin(theta1);
-    y1 = L1 * Math.cos(theta1);
+    let originX = width / 2;
+    let originY = 100;
+
+    x1 = originX + L1 * Math.sin(theta1);
+    y1 = originY + L1 * Math.cos(theta1);
     x2 = x1 + L2 * Math.sin(theta2);
     y2 = y1 + L2 * Math.cos(theta2);
 
-    // Draw trail
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
-    ctx.beginPath();
-    for (let i = 0; i < trail.length - 1; i++) {
-        ctx.moveTo(trail[i].x, trail[i].y);
-        ctx.lineTo(trail[i + 1].x, trail[i + 1].y);
-    }
-    ctx.stroke();
-
     // Rods
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
+    stroke(225);
+    strokeWeight(2);
+    line(originX, originY, x1, y1);
+    line(x1, y1, x2, y2);
 
-    // Masses
-    ctx.fillStyle = "red";
-    ctx.beginPath();
-    ctx.arc(x1, y1, m1 / 2, 0, Math.PI * 2);
-    ctx.fill();
+    // Trail
+    noFill();
+    stroke(225);
+    strokeWeight(1);
+    beginShape();
+    for (let pos of trail) {
+        vertex(pos.x, pos.y);
+    }
+    endShape();
 
-    ctx.fillStyle = "blue";
-    ctx.beginPath();
-    ctx.arc(x2, y2, m2 / 2, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.restore();
+    // Bobs
+    fill(225, 100, 100);
+    ellipse(x1, y1, 30, 30);
+    fill(100, 225, 100);
+    ellipse(x2, y2, 30, 30);
 }
-
-function loop() {
-    for (let i = 0; i < 2; i++) update();
-    draw();
-    requestAnimationFrame(loop);
-}
-
-loop();

@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Double Pendulum Simulator</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"></script>
     <script defer src="./script.js"></script>
-    <link rel="stylesheet" href="./style.css">
+    <!-- <link rel="stylesheet" href="./style.css"> -->
     <link rel="shortcut icon" href="data:,">
 </head>
 <body>
-    <canvas id="canvas" height="600" width="800"></canvas>
-    <label for="gravity">Gravity<input type="range" id="gravity" max="20" min="0" step="1" value="1"></label>
+    <label for="gravity">Gravity<input type="range" id="gravity" max="200" min="0" step="1" value="9.81"></label>
     
     <label for="m1">M1<input type="number" id="m1" value="20"></label>
     <label for="m2">M2<input type="number" id="m2" value="20"></label>
