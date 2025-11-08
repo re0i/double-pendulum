@@ -1,5 +1,7 @@
 let g_el, m1_el, m2_el, L1_el, L2_el;
 let g, m1, m2, L1, L2;
+let m1Color_el, m2Color_el, L1Color_el, L2Color_el;
+let m1Color, m2Color, L1Color, L2Color;
 
 const dt = 0.01;
 
@@ -14,29 +16,28 @@ let x1, y1, x2, y2;
 let trail = [];
 
 function setup(){
-    createCanvas(800, 600);
+    createCanvas(windowWidth - 40, windowHeight - 40);
 
     g_el = select('#gravity');
     m1_el = select('#m1');
     m2_el = select('#m2');
     L1_el = select('#l1');
     L2_el = select('#l2');
+    m1Color_el = select('#color-bob-1');
+    m2Color_el = select('#color-bob-2');
+    L1Color_el = select('#color-rod-1');
+    L2Color_el = select('#color-rod-2');
+    
 
     g = parseFloat(g_el.value());
     m1 = parseFloat(m1_el.value());
     m2 = parseFloat(m2_el.value());
     L1 = parseFloat(L1_el.value());
     L2 = parseFloat(L2_el.value());
-
-    [g_el, m1_el, m2_el, L1_el, L2_el].forEach(el =>
-        el.input(() =>{
-            g = parseFloat(g_el.value());
-            m1 = parseFloat(m1_el.value());
-            m2 = parseFloat(m2_el.value());
-            L1 = parseFloat(L1_el.value());
-            L2 = parseFloat(L2_el.value());
-        })
-    );
+    m1Color = m1Color_el.value();
+    m2Color = m2Color_el.value();
+    L1Color = L1Color_el.value();
+    L2Color = L2Color_el.value();
 }
 
 function getAccelerations(theta1, theta2, theta1_v, theta2_v){
@@ -103,8 +104,8 @@ function update(){
     theta2_v += (k1_a2_dt + 2 * k2_a2_dt + 2 * k3_a2_dt + k4_a2_dt) / 6;
 
     // Dampping
-    theta1_v *= 0.99995;
-    theta2_v *= 0.99995;
+    theta1_v *= 0.9999;
+    theta2_v *= 0.9999;
 
     trail.push({ x: x2, y: y2 });
     if (trail.length > 5000) trail.shift();
@@ -114,8 +115,22 @@ function draw(){
     background(0);
     update();
 
+    [g_el, m1_el, m2_el, L1_el, L2_el, m1Color_el, m2Color_el, L1Color_el, L2Color_el].forEach(el =>
+        el.input(() =>{
+            g = parseFloat(g_el.value());
+            m1 = parseFloat(m1_el.value());
+            m2 = parseFloat(m2_el.value());
+            L1 = parseFloat(L1_el.value());
+            L2 = parseFloat(L2_el.value());
+            m1Color = m1Color_el.value();
+            m2Color = m2Color_el.value();
+            L1Color = L1Color_el.value();
+            L2Color = L2Color_el.value();
+        })
+    );
+
     let originX = width / 2;
-    let originY = 100;
+    let originY = height / 4;
 
     x1 = originX + L1 * Math.sin(theta1);
     y1 = originY + L1 * Math.cos(theta1);
@@ -123,9 +138,11 @@ function draw(){
     y2 = y1 + L2 * Math.cos(theta2);
 
     // Rods
-    stroke(225);
+    stroke(L1Color);
     strokeWeight(2);
     line(originX, originY, x1, y1);
+    stroke(L2Color);
+    strokeWeight(2);
     line(x1, y1, x2, y2);
 
     // Trail
@@ -139,8 +156,8 @@ function draw(){
     endShape();
 
     // Bobs
-    fill(225, 100, 100);
-    ellipse(x1, y1, 30, 30);
-    fill(100, 225, 100);
-    ellipse(x2, y2, 30, 30);
+    fill(m1Color);
+    ellipse(x1, y1, m1, m1);
+    fill(m2Color);
+    ellipse(x2, y2, m2, m2);
 }
