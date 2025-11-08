@@ -6,15 +6,76 @@
     <title>Double Pendulum Simulator</title>
     <script defer src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"></script>
     <script defer src="./script.js"></script>
-    <!-- <link rel="stylesheet" href="./style.css"> -->
+    <link rel="stylesheet" href="./style.css">
     <link rel="shortcut icon" href="data:,">
 </head>
 <body>
-    <label for="gravity">Gravity<input type="range" id="gravity" max="200" min="0" step="1" value="9.81"></label>
-    
-    <label for="m1">M1<input type="number" id="m1" value="20"></label>
-    <label for="m2">M2<input type="number" id="m2" value="20"></label>
-    <label for="l1">L1<input type="number" id="l1" value="100"></label>
-    <label for="l2">L2<input type="number" id="l2" value="100"></label>
+    <main class="container">
+        <section class="settings">
+
+            <!-- General Settings -->
+             <div class="general">
+                <h3>General</h3>
+                <label for="gravity">
+                    Gravity:
+                    <input type="range" name="gravity" id="gravity" min="0" max="200" step="1" value="9.81">
+                </label>
+             </div>
+
+             <!-- Mouse Settings -->
+              <div class="mouse">
+                <h3>Mouse Interaction</h3>
+                <label>
+                    <input type="checkbox" name="mouse" id="mouse">
+                    Enable Mouse Interaction
+                </label>
+
+                <div class="mouse-options">
+                    <label>
+                        <input type="radio" name="mouse-props" id="drag" value="drag">
+                        Drag
+                    </label>
+                    <label>
+                        <input type="radio" name="mouse-props" id="push" value="push">
+                        Push
+                    </label>
+                </div>
+              </div>
+
+              <!-- Rods Settings -->
+               <div class="rods">
+                <h3>Rods</h3>
+                <label for="l1"> L1:
+                    <input type="number" name="l1" id="l1" value="100">
+                </label>
+                <label for="l2"> L2:
+                    <input type="number" name="l2" id="l2" value="100">
+                </label>
+                <label for="color-rod-1"> Color of Rod 1:
+                    <input type="color" name="color-rod-1" id="color-rod-1" value="#ffffff">
+                </label>
+                <label for="color-rod-2"> Color of Rod 2:
+                    <input type="color" name="color-rod-2" id="color-rod-2" value="#ffffff">
+                </label>
+               </div>
+
+               <!-- Bobs Settings -->
+                <div class="bobs">
+                    <h3>Bobs</h3>
+                    <label for="m1"> M1:
+                        <input type="number" name="m1" id="m1" value="20">
+                    </label>
+                    <label for="m1"> M2:
+                        <input type="number" name="m2" id="m2" value="20">
+                    </label>
+                    <label for="color-bob-1"> Color of Bob 1:
+                        <input type="color" name="color-bob-1" id="color-bob-1" value="#ffffff">
+                    </label>
+                    <label for="color-bob-2"> Color of Bob 2:
+                        <input type="color" name="color-bob-2" id="color-bob-2" value="#ffffff">
+                    </label>
+                </div>
+        </section>
+    </main>
 </body>
 </html>
