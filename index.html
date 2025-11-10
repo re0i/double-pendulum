@@ -10,73 +10,56 @@
     <link rel="shortcut icon" href="data:,">
 </head>
 <body>
-    <main class="container">
-        <section class="settings">
+    <section class="settings">
+        <!-- General Settings --> 
+        <h3>General</h3>
+        <label for="gravity">
+            Gravity:
+            <input type="range" name="gravity" id="gravity" min="0" max="200" step="1" value="0">
+        </label>
 
-            <!-- General Settings -->
-             <div class="general">
-                <h3>General</h3>
-                <label for="gravity">
-                    Gravity:
-                    <input type="range" name="gravity" id="gravity" min="0" max="200" step="1" value="9.81">
-                </label>
-             </div>
+        <!-- Mouse Settings -->
+        <h3>Mouse Interaction</h3>
+        <label>Enable Mouse Interaction
+            <input type="checkbox" name="mouse" id="mouse" style="display: block;">
+        </label>
+        <label style="display: block;">Drag
+            <input type="radio" name="mouse-props" id="drag" value="drag">
+        </label>
+        <label style="display: block;">Push
+            <input type="radio" name="mouse-props" id="push" value="push">
+        <label style="font-size: 0.95rem;">Push Power<input type="number" name="push-power" id="push-power" value="1" min="0" max="10"></label>
+        </label>
 
-             <!-- Mouse Settings -->
-              <div class="mouse">
-                <h3>Mouse Interaction</h3>
-                <label>
-                    <input type="checkbox" name="mouse" id="mouse">
-                    Enable Mouse Interaction
-                </label>
-
-                <div class="mouse-options">
-                    <label>
-                        <input type="radio" name="mouse-props" id="drag" value="drag">
-                        Drag
-                    </label>
-                    <label>
-                        <input type="radio" name="mouse-props" id="push" value="push">
-                        Push<br>
-                        <label>Push Power<input type="number" name="push-power" id="push-power" value="1"></label>
-                    </label>
-                </div>
-              </div>
-
-              <!-- Rods Settings -->
-               <div class="rods">
-                <h3>Rods</h3>
-                <label for="l1"> L1:
-                    <input type="number" name="l1" id="l1" value="100">
-                </label>
-                <label for="l2"> L2:
-                    <input type="number" name="l2" id="l2" value="100">
-                </label>
-                <label for="color-rod-1"> Color of Rod 1:
-                    <input type="color" name="color-rod-1" id="color-rod-1" value="#ffffff">
-                </label>
-                <label for="color-rod-2"> Color of Rod 2:
-                    <input type="color" name="color-rod-2" id="color-rod-2" value="#ffffff">
-                </label>
-               </div>
-
-               <!-- Bobs Settings -->
-                <div class="bobs">
-                    <h3>Bobs</h3>
-                    <label for="m1"> M1:
-                        <input type="number" name="m1" id="m1" value="20">
-                    </label>
-                    <label for="m1"> M2:
-                        <input type="number" name="m2" id="m2" value="20">
-                    </label>
-                    <label for="color-bob-1"> Color of Bob 1:
-                        <input type="color" name="color-bob-1" id="color-bob-1" value="#ffffff">
-                    </label>
-                    <label for="color-bob-2"> Color of Bob 2:
-                        <input type="color" name="color-bob-2" id="color-bob-2" value="#ffffff">
-                    </label>
-                </div>
-        </section>
-    </main>
+        <!-- Rods Settings -->
+        <h3>Rods</h3>
+        <label for="l1"> L1:
+            <input type="number" name="l1" id="l1" value="100">
+        </label>
+        <label for="l2"> L2:
+            <input type="number" name="l2" id="l2" value="100">
+        </label>
+        <label for="color-rod-1"> Color of Rod 1:
+            <input type="color" name="color-rod-1" id="color-rod-1" value="#ffffff">
+        </label>
+        <label for="color-rod-2"> Color of Rod 2:
+            <input type="color" name="color-rod-2" id="color-rod-2" value="#ffffff">
+        </label>
+        
+        <!-- Bobs Settings -->
+        <h3>Bobs</h3>
+        <label for="m1"> M1:
+            <input type="number" name="m1" id="m1" value="20">
+        </label>
+        <label for="m1"> M2:
+            <input type="number" name="m2" id="m2" value="20">
+        </label>
+        <label for="color-bob-1"> Color of Bob 1:
+            <input type="color" name="color-bob-1" id="color-bob-1" value="#ffffff">
+        </label>
+        <label for="color-bob-2"> Color of Bob 2:
+            <input type="color" name="color-bob-2" id="color-bob-2" value="#ffffff">
+        </label>
+    </section>
 </body>
 </html>

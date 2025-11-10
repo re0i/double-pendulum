@@ -33,3 +33,23 @@ body {
   margin: 0;
   margin-top: 1rem;
 }
+
+label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+input[type="number"],
+input[type="color"] {
+  width: 40px;
+}
+
+input[type="range"]{
+  margin-left: 0.5rem;
+}
+
+input[type="color"] {
+  background-color: transparent;
+  border: solid 1px transparent;
+}
