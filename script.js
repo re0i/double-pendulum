@@ -2,10 +2,12 @@ let g_el, m1_el, m2_el, L1_el, L2_el;
 let g, m1, m2, L1, L2;
 let m1Color_el, m2Color_el, L1Color_el, L2Color_el;
 let m1Color, m2Color, L1Color, L2Color;
-let mouseInteraction, drag, push; // not used
+let mouseInteraction, drag, push, pushPower_el, pushPower;
 let draggingBob = null;
 
 const dt = 0.02;
+let dampping = 0.9999;
+let pushRadius = 80;
 
 let theta1 = Math.PI / 2;
 let theta2 = Math.PI / 2;
@@ -26,10 +28,14 @@ function setup(){
     m2_el = select('#m2');
     L1_el = select('#l1');
     L2_el = select('#l2');
+    mouseInteraction = select('#mouse');
+    drag = select('#drag');
+    push = select('#push');
     m1Color_el = select('#color-bob-1');
     m2Color_el = select('#color-bob-2');
     L1Color_el = select('#color-rod-1');
     L2Color_el = select('#color-rod-2');
+    pushPower_el = select('#push-power');
     
 
     g = parseFloat(g_el.value());
@@ -37,10 +43,31 @@ function setup(){
     m2 = parseFloat(m2_el.value());
     L1 = parseFloat(L1_el.value());
     L2 = parseFloat(L2_el.value());
+    pushPower = parseFloat(pushPower_el.value());
     m1Color = m1Color_el.value();
     m2Color = m2Color_el.value();
     L1Color = L1Color_el.value();
     L2Color = L2Color_el.value();
+
+    toggleMouseOptions(false);
+
+    mouseInteraction.changed(() => {
+        toggleMouseOptions(mouseInteraction.elt.checked);
+    });
+
+    push.changed(() => {
+        pushPower_el.elt.disabled = !push.elt.checked;
+    });
+
+    drag.changed(() => {
+        pushPower_el.elt.disabled = true;
+    });
+}
+
+function toggleMouseOptions(enabled){
+    drag.elt.disabled = !enabled;
+    push.elt.disabled = !enabled;
+    pushPower_el.elt.disabled = !enabled || !push.elt.checked;
 }
 
 function getAccelerations(theta1, theta2, theta1_v, theta2_v){
@@ -107,8 +134,8 @@ function update(){
     theta2_v += (k1_a2_dt + 2 * k2_a2_dt + 2 * k3_a2_dt + k4_a2_dt) / 6;
 
     // Dampping
-    theta1_v *= 0.9999;
-    theta2_v *= 0.9999;
+    theta1_v *= dampping;
+    theta2_v *= dampping;
 
     trail.push({ x: x2, y: y2 });
     if (trail.length > 5000) trail.shift();
@@ -117,34 +144,80 @@ function update(){
 }
 
 function mousePressed(){
-    let d1 = dist(mouseX, mouseY, x1, y1);
-    let d2 = dist(mouseX, mouseY, x2, y2);
-    
-    if (d1 < m1) {
-        draggingBob = 1;
-    } else if (d2 < m2) {
-        draggingBob = 2;
+    if (!mouseInteraction.elt.checked) return;
+
+    if (push.elt.checked){
+        mousePush();
+    } else if (drag.elt.checked){
+        let d1 = dist(mouseX, mouseY, x1, y1);
+        let d2 = dist(mouseX, mouseY, x2, y2);
+        
+        if (d1 < m1) {
+            draggingBob = 1;
+        } else if (d2 < m2) {
+            draggingBob = 2;
+        } else {
+            draggingBob = null;
+        }
     }
 }
 
 function mouseDragged(){
+    if (!mouseInteraction.elt.checked || !drag.elt.checked) return;
+
     if (draggingBob === 1) {
         let dx = mouseX - width / 2;
         let dy = mouseY - height / 4;
         theta1 = Math.atan2(dx, dy);
-        theta1_v = 0.1;
+        theta1_v = Math.sqrt(dx * dx + dy * dy) * 0.01 * (dy < 0 ? -1 : 1);
+        dampping = 1;
     } else if (draggingBob === 2) {
         let dx = mouseX - x1;
         let dy = mouseY - y1;
         theta2 = Math.atan2(dx, dy);
-        theta2_v = 0.1;
+        theta2_v = Math.sqrt(dx * dx + dy * dy) * 0.01 * (dy < 0 ? -1 : 1);
+        dampping = 1;
     }
 }
 
 function mouseReleased(){
     draggingBob = null;
+    dampping = 0.9999;
     loop();
 }
+
+function mousePush(){
+    if (!mouseInteraction.elt.checked || !push.elt.checked) return;
+
+    let dx1 = mouseX - x1;
+    let dy1 = mouseY - y1;
+    let d1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+
+    if(d1 < pushRadius){
+        let ux = dx1 / d1;
+        let uy = dy1 / d1;
+
+        let tx = uy;
+        let ty = -ux;
+        let push = pushPower * (1 - d1 / pushRadius);
+        theta1_v += (push * (tx * L1 + ty * L1)) / L1;
+    }
+
+    let dx2 = mouseX - x1;
+    let dy2 = mouseY - y1;
+    let d2 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+
+    if(d2 < pushRadius){
+        let ux = dx2 / d2;
+        let uy = dy2 / d2;
+        let tx = uy;
+        let ty = -ux;
+
+        let push = pushPower * (1 - d2 / pushRadius);
+        theta2_v += (push * (tx * L2 + ty * L2)) / L2;
+    }
+}
+
 
 function draw(){
     background(0);
