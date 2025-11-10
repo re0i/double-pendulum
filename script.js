@@ -169,13 +169,13 @@ function mouseDragged(){
         let dx = mouseX - width / 2;
         let dy = mouseY - height / 4;
         theta1 = Math.atan2(dx, dy);
-        theta1_v = Math.sqrt(dx * dx + dy * dy) * 0.01 * (dy < 0 ? -1 : 1);
+        theta1_v = 0;
         dampping = 1;
     } else if (draggingBob === 2) {
         let dx = mouseX - x1;
         let dy = mouseY - y1;
         theta2 = Math.atan2(dx, dy);
-        theta2_v = Math.sqrt(dx * dx + dy * dy) * 0.01 * (dy < 0 ? -1 : 1);
+        theta2_v = 0;
         dampping = 1;
     }
 }
@@ -183,7 +183,6 @@ function mouseDragged(){
 function mouseReleased(){
     draggingBob = null;
     dampping = 0.9999;
-    loop();
 }
 
 function mousePush(){
@@ -194,13 +193,12 @@ function mousePush(){
     let d1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
 
     if(d1 < pushRadius){
-        let ux = dx1 / d1;
-        let uy = dy1 / d1;
-
-        let tx = uy;
-        let ty = -ux;
         let push = pushPower * (1 - d1 / pushRadius);
-        theta1_v += (push * (tx * L1 + ty * L1)) / L1;
+
+        let angleToBob = Math.atan2(dy1, dx1);
+        let tangent = angleToBob + Math.PI / 2;
+
+        theta1_v += push * Math.cos(tangent - theta1); 
     }
 
     let dx2 = mouseX - x2;
@@ -208,13 +206,12 @@ function mousePush(){
     let d2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
 
     if(d2 < pushRadius){
-        let ux = dx2 / d2;
-        let uy = dy2 / d2;
-        let tx = uy;
-        let ty = -ux;
-
         let push = pushPower * (1 - d2 / pushRadius);
-        theta2_v += (push * (tx * L2 + ty * L2)) / L2;
+
+        let angleToBob = Math.atan2(dy2, dx2);
+        let tangent = angleToBob + Math.PI / 2;
+        
+        theta2_v += push * Math.cos(tangent - theta2);
     }
 }
 
